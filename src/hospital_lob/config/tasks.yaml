@@ -1,0 +1,78 @@
+collect_patient_flow_data:
+  description: >
+    Gather current patient flow data across all hospital LOB stages for the last
+    {time_window} hours. Validate data quality, check for missing timestamps,
+    and provide a summary of patient census by stage, priority, and department.
+  expected_output: >
+    A structured JSON summary containing: total patients, active patients,
+    patients by stage, patients by priority, and any data quality flags.
+  agent: data_collector
+
+compute_lob_metrics:
+  description: >
+    Using the patient flow data collected, compute all Line of Balance metrics:
+    takt time per stage, ALOS, bed turnover rate, ED door-to-provider time,
+    OR utilization, and nurse-to-patient ratio. Generate LOB chart data showing
+    planned vs actual throughput across all stages.
+  expected_output: >
+    Complete LOB metrics snapshot as JSON with per-stage metrics, overall KPIs,
+    and LOB chart data. Highlight any stages significantly below target throughput.
+  agent: lob_analyst
+
+identify_bottlenecks:
+  description: >
+    Analyze the LOB metrics to identify the primary and secondary bottleneck
+    stages using Theory of Constraints. Consider throughput deviation, WIP
+    accumulation, and utilization. Explain the cascade effect of each bottleneck
+    on upstream and downstream stages.
+  expected_output: >
+    Bottleneck analysis report with: primary constraint stage, secondary constraint,
+    constraint scores for all stages, and a narrative explaining the impact on
+    overall hospital throughput and patient flow.
+  agent: bottleneck_detector
+
+generate_recommendations:
+  description: >
+    Based on the bottleneck analysis and LOB metrics, generate a prioritized list
+    of corrective actions. Consider: adding capacity, staff redeployment, care
+    pathway redesign, batch size reduction, discharge process improvement, and
+    demand smoothing. For each recommendation, estimate expected impact.
+  expected_output: >
+    A prioritized list of 3-5 corrective actions, each with: description,
+    target stage, expected throughput improvement, implementation complexity
+    (low/medium/high), and timeline. Include a summary of which actions to
+    take first for maximum impact.
+  agent: recommender
+
+run_simulation:
+  description: >
+    Run a discrete-event simulation of hospital patient flow with the specified
+    scenario parameters. Compare results against the current baseline metrics
+    to quantify the projected improvement.
+  expected_output: >
+    Simulation results including: projected throughput per stage, projected ALOS,
+    predicted bottleneck under new conditions, and a comparison table showing
+    baseline vs projected metrics for each KPI.
+  agent: simulator
+
+analyze_pharmacy_lob:
+  description: >
+    Analyze the pharmacy medication dispensing pipeline. Compute MTAT,
+    verification queue depth, compounding utilization, and identify the
+    pharmacy-specific bottleneck stage. Compare against target turnaround times.
+  expected_output: >
+    Pharmacy LOB metrics including: average MTAT, per-stage queue depths,
+    throughput per stage, bottleneck identification, and comparison to
+    target turnaround times. Flag any orders exceeding critical MTAT thresholds.
+  agent: pharmacy_analyst
+
+check_thresholds:
+  description: >
+    Check all configured alert thresholds against current metric values.
+    Generate alerts for any breached thresholds with appropriate severity
+    levels (info, warning, critical).
+  expected_output: >
+    List of active alerts with: metric name, current value, threshold value,
+    severity level, affected stage, and recommended action. Return empty list
+    if no thresholds are breached.
+  agent: alert_monitor
